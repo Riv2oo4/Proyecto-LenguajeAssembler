@@ -26,18 +26,28 @@ scanf proto C : VARARG
     respuesta2B byte "b) 1800",0Ah,0
     respuesta2C byte "c) 1650",0Ah,0
     respuesta2Correcta byte "a",0Ah,0
-    pregunta3 byte "¿¿Qué elemento químico tiene el símbolo "Au" en la tabla periódica?"
+
+    
+    pregunta3 byte "¿Qué elemento químico tiene el símbolo 'Au' en la tabla periódica?", 0Ah, 0
+
     respuesta3A byte "a) Aluminio",0Ah,0
     respuesta3B byte "b) Aurum",0Ah,0
     respuesta3C byte "c) Argon",0Ah,0
     respuesta3Correcta byte "b",0Ah,0
-    pregunta4 byte "¿Quien pinto "La ultima Cena"?"
+
+    pregunta4 byte "¿Quien pinto ""La ultima Cena""?", 0Ah, 0
+
     respuesta4A byte "a) Vincent Van Gogh",0Ah,0
     respuesta4B byte "b) Michelangelo",0Ah,0
     respuesta4C byte "c) Leonardo da Vinci",0Ah,0
     respuesta4Correcta byte "c",0Ah,0
-    continuarMsg BYTE "¿Deseas continuar? (s/n)", 0Ah, 0
-    continuarRespuesta BYTE 255 DUP(?) ; Buffer para almacenar la respuesta a continuar
+
+    pregunta5 byte "¿Como se llama nuestro profesor de Assembler?", 0Ah, 0
+
+    respuesta5A byte "a) Roger",0Ah,0
+    respuesta5B byte "b) Douglas",0Ah,0
+    respuesta5C byte "c) Linett",0Ah,0
+    respuesta5Correcta byte "a",0Ah,0
 
 
 .code
@@ -131,6 +141,139 @@ mostrarPuntaje2:
     call printf
     add esp, 8
 
+; Tercera pregunta
+    push offset pregunta3
+    call printf
+
+    push offset respuesta3A
+    call printf
+
+    push offset respuesta3B
+    call printf
+
+    push offset respuesta3C
+    call printf
+
+    lea eax, strBuff
+    push eax
+    push offset fmt
+    call scanf
+
+    add esp, 8
+
+    mov esi, offset strBuff
+    mov edi, offset respuesta3Correcta
+    cmpsb
+    jne respuesta3NoIgual
+
+    mov eax, [puntaje]
+    add eax, 10
+    mov [puntaje], eax
+
+    push offset igualMsg
+    call printf
+    jmp mostrarPuntaje3
+
+respuesta3NoIgual:
+    push offset noIgualMsg
+    call printf
+
+mostrarPuntaje3:
+    push dword ptr [puntaje]
+    push offset puntajeMsg
+    call printf
+    add esp, 8
+
+
+; Cuarta pregunta
+    push offset pregunta4
+    call printf
+
+    push offset respuesta4A
+    call printf
+
+    push offset respuesta4B
+    call printf
+
+    push offset respuesta4C
+    call printf
+
+    lea eax, strBuff
+    push eax
+    push offset fmt
+    call scanf
+
+    add esp, 8
+
+    mov esi, offset strBuff
+    mov edi, offset respuesta4Correcta
+    cmpsb
+    jne respuesta3NoIgual
+
+    mov eax, [puntaje]
+    add eax, 10
+    mov [puntaje], eax
+
+    push offset igualMsg
+    call printf
+    jmp mostrarPuntaje4
+
+respuesta4NoIgual:
+    push offset noIgualMsg
+    call printf
+
+mostrarPuntaje4:
+    push dword ptr [puntaje]
+    push offset puntajeMsg
+    call printf
+    add esp, 8
+
+
+
+; Quinta pregunta
+    push offset pregunta5
+    call printf
+
+    push offset respuesta5A
+    call printf
+
+    push offset respuesta5B
+    call printf
+
+    push offset respuesta5C
+    call printf
+
+    lea eax, strBuff
+    push eax
+    push offset fmt
+    call scanf
+
+    add esp, 8
+
+    mov esi, offset strBuff
+    mov edi, offset respuesta5Correcta
+    cmpsb
+    jne respuesta5NoIgual
+
+    mov eax, [puntaje]
+    add eax, 10
+    mov [puntaje], eax
+
+    push offset igualMsg
+    call printf
+    jmp mostrarPuntaje5
+
+respuesta5NoIgual:
+    push offset noIgualMsg
+    call printf
+
+mostrarPuntaje5:
+    push dword ptr [puntaje]
+    push offset puntajeMsg
+    call printf
+    add esp, 8
+
+
 finComparacion:
     mov esp, ebp
     pop ebp
@@ -141,5 +284,3 @@ finComparacion:
 main endp
 
 end
-
-
