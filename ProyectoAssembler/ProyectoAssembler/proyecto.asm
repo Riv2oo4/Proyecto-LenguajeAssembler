@@ -36,6 +36,8 @@ scanf proto C : VARARG
     respuesta4B byte "b) Michelangelo",0Ah,0
     respuesta4C byte "c) Leonardo da Vinci",0Ah,0
     respuesta4Correcta byte "c",0Ah,0
+    continuarMsg BYTE "¿Deseas continuar? (s/n)", 0Ah, 0
+    continuarRespuesta BYTE 255 DUP(?) ; Buffer para almacenar la respuesta a continuar
 
 
 .code
