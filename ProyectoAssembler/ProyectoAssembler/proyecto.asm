@@ -26,61 +26,108 @@ scanf proto C : VARARG
     respuesta2B byte "b) 1800",0Ah,0
     respuesta2C byte "c) 1650",0Ah,0
     respuesta2Correcta byte "a",0Ah,0
+    pregunta3 byte "¿¿Qué elemento químico tiene el símbolo "Au" en la tabla periódica?"
+    respuesta3A byte "a) Aluminio",0Ah,0
+    respuesta3B byte "b) Aurum",0Ah,0
+    respuesta3C byte "c) Argon",0Ah,0
+    respuesta3Correcta byte "b",0Ah,0
+    pregunta4 byte "¿Quien pinto "La ultima Cena"?"
+    respuesta4A byte "a) Vincent Van Gogh",0Ah,0
+    respuesta4B byte "b) Michelangelo",0Ah,0
+    respuesta4C byte "c) Leonardo da Vinci",0Ah,0
+    respuesta4Correcta byte "c",0Ah,0
+
 
 .code
 main proc
     push ebp
     mov ebp, esp
 
-    push offset pregunta	; Imprimir mensaje
+    ; Primera pregunta
+    push offset pregunta
     call printf
 
-    push offset respuestaA	; Imprimir mensaje
+    push offset respuestaA
     call printf
-    
+
     push offset respuestaB
     call printf
 
     push offset respuestaC
     call printf
 
-    lea  eax, strBuff 		; Obtener dirección del buffer
-    push eax 				; Empujar dirección a la pila
-    push offset fmt 		; Empujar formato a la pila
-    call scanf 				; Leer cadena desde la entrada estándar
+    lea eax, strBuff
+    push eax
+    push offset fmt
+    call scanf
 
-    push offset strBuff 	; Empujar cadena a la pila
-    push offset resultMsg 	; Empujar formato a la pila
-    call printf 			; Imprimir resultado
+    add esp, 8
 
-    add esp, 8 				; Limpiar la pila
+    mov esi, offset strBuff
+    mov edi, offset respuesta1Correcta
+    cmpsb
+    jne respuestaNoIgual
 
-  ; Comparar respuesta ingresada con la respuesta correcta
-    mov esi, offset strBuff            ; Puntero a la cadena ingresada
-    mov edi, offset respuesta1Correcta     ; Puntero a la respuesta correcta
-
-    cmpsb                                               ; Compara byte por byte
-
-    jne respuestaNoIgual                   ; Salta si no son iguales
-
- ; Incrementar el puntaje en 10 si la respuesta es correcta
     mov eax, [puntaje]
     add eax, 10
     mov [puntaje], eax
 
     push offset igualMsg
-    call printf                                         ; Imprimir mensaje si son iguales
+    call printf
     jmp mostrarPuntaje
 
 respuestaNoIgual:
     push offset noIgualMsg
-    call printf                                         ; Imprimir mensaje si no son iguales
+    call printf
 
 mostrarPuntaje:
- ; Imprimir el puntaje
-    push offset puntajeMsg
     push dword ptr [puntaje]
-    call printf                                          ; Imprimir puntaje
+    push offset puntajeMsg
+    call printf
+    add esp, 8
+
+    ; Segunda pregunta
+    push offset pregunta2
+    call printf
+
+    push offset respuesta2A
+    call printf
+
+    push offset respuesta2B
+    call printf
+
+    push offset respuesta2C
+    call printf
+
+    lea eax, strBuff
+    push eax
+    push offset fmt
+    call scanf
+
+    add esp, 8
+
+    mov esi, offset strBuff
+    mov edi, offset respuesta2Correcta
+    cmpsb
+    jne respuesta2NoIgual
+
+    mov eax, [puntaje]
+    add eax, 10
+    mov [puntaje], eax
+
+    push offset igualMsg
+    call printf
+    jmp mostrarPuntaje2
+
+respuesta2NoIgual:
+    push offset noIgualMsg
+    call printf
+
+mostrarPuntaje2:
+    push dword ptr [puntaje]
+    push offset puntajeMsg
+    call printf
+    add esp, 8
 
 finComparacion:
     mov esp, ebp
@@ -92,3 +139,5 @@ finComparacion:
 main endp
 
 end
+
+
