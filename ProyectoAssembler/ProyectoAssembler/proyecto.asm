@@ -10,10 +10,13 @@ scanf proto C : VARARG
 .data
     i byte 0
     puntaje DWORD 0
+    bienvenida byte "Bienvenido al programa de triva TRIVIAMA5T3R3000 en donde ganaras 10 millones de dolares por cada pregunta acertada",0Ah,0
+
     pregunta byte "¿Cual es la capital de Guatemala?", 0Ah, 0
     respuestaA byte "a) China",0Ah,0
     respuestaB byte "b) Japon",0Ah,0
     respuestaC byte "c) Guatemala",0Ah,0
+    respuestaD byte "d) Antigua Guatemala",0Ah,0
     respuesta1Correcta byte "c",0Ah,0
     strBuff BYTE 255 DUP(?) ; Buffer para almacenar la cadena ingresada, máx 255 caracteres
     resultMsg BYTE 'La respuesta ingresada es: %s', 0Ah, 0
@@ -25,23 +28,24 @@ scanf proto C : VARARG
     respuesta2A byte "a) 1600",0Ah,0
     respuesta2B byte "b) 1800",0Ah,0
     respuesta2C byte "c) 1650",0Ah,0
+    respuesta2D byte "d) 1625",0Ah,0
     respuesta2Correcta byte "a",0Ah,0
-
-    
-    pregunta3 byte "¿Qué elemento químico tiene el símbolo 'Au' en la tabla periódica?", 0Ah, 0
-
+    pregunta3 byte "¿Qué elemento quimico tiene el simbolo Au en la tabla periodica?",0Ah,0
     respuesta3A byte "a) Aluminio",0Ah,0
     respuesta3B byte "b) Aurum",0Ah,0
     respuesta3C byte "c) Argon",0Ah,0
+    respuesta3D byte "d) Hierro",0Ah,0
     respuesta3Correcta byte "b",0Ah,0
-
-    pregunta4 byte "¿Quien pinto ""La ultima Cena""?", 0Ah, 0
-
+    pregunta4 byte "¿Quien pinto La ultima Cena?",0Ah,0
     respuesta4A byte "a) Vincent Van Gogh",0Ah,0
     respuesta4B byte "b) Michelangelo",0Ah,0
     respuesta4C byte "c) Leonardo da Vinci",0Ah,0
+    respuesta4D byte "d) Bob Marley"
     respuesta4Correcta byte "c",0Ah,0
-
+    continuarMsg BYTE "¿Deseas continuar? (s/n)", 0Ah, 0
+    continuarRespuesta BYTE 255 DUP(?) ; Buffer para almacenar la respuesta a continuar
+    winnerMsg BYTE "¡Felicidades! Ganaste $%d", 0Ah, 0
+    loserMsg BYTE "Juego terminado. Perdiste $%d en la pregunta '%s'. Tu respuesta fue '%s', pero la respuesta correcta era '%s'", 0Ah, 0
     pregunta5 byte "¿Como se llama nuestro profesor de Assembler?", 0Ah, 0
 
     respuesta5A byte "a) Roger",0Ah,0
@@ -49,12 +53,23 @@ scanf proto C : VARARG
     respuesta5C byte "c) Linett",0Ah,0
     respuesta5Correcta byte "a",0Ah,0
 
-
 .code
 main proc
     push ebp
     mov ebp, esp
+    ; Bienvenida
+    push offset bienvenida
+    call printf
+    push offset continuarMsg
+    call printf
 
+    lea eax, continuarRespuesta
+    push eax
+    push offset fmt
+    call scanf
+    add esp, 8
+    cmp byte ptr [continuarRespuesta], 'n'
+    je finComparacion
     ; Primera pregunta
     push offset pregunta
     call printf
@@ -67,6 +82,9 @@ main proc
 
     push offset respuestaC
     call printf
+    
+    push offset respuestaD
+    call printf 
 
     lea eax, strBuff
     push eax
@@ -91,6 +109,17 @@ main proc
 respuestaNoIgual:
     push offset noIgualMsg
     call printf
+    jmp gameOver
+
+    gameOver:
+    ; Si una pregunta fue contestada incorrectamente, mostrar el mensaje de perdedor
+    push offset respuesta1Correcta
+    push offset strBuff
+    push offset pregunta
+    push dword ptr [puntaje]
+    push offset loserMsg
+    call printf
+    add esp, 20
 
 mostrarPuntaje:
     push dword ptr [puntaje]
@@ -98,50 +127,87 @@ mostrarPuntaje:
     call printf
     add esp, 8
 
-    ; Segunda pregunta
-    push offset pregunta2
+    push offset continuarMsg
     call printf
 
-    push offset respuesta2A
-    call printf
-
-    push offset respuesta2B
-    call printf
-
-    push offset respuesta2C
-    call printf
-
-    lea eax, strBuff
+    lea eax, continuarRespuesta
     push eax
     push offset fmt
     call scanf
-
     add esp, 8
 
-    mov esi, offset strBuff
-    mov edi, offset respuesta2Correcta
-    cmpsb
-    jne respuesta2NoIgual
+cmp byte ptr [continuarRespuesta], 'n'
+je finComparacion
 
-    mov eax, [puntaje]
-    add eax, 10
-    mov [puntaje], eax
+; Segunda pregunta
+push offset pregunta2
+call printf
 
-    push offset igualMsg
-    call printf
-    jmp mostrarPuntaje2
+push offset respuesta2A
+call printf
+
+push offset respuesta2B
+call printf
+
+push offset respuesta2C
+call printf
+
+push offset respuesta2D
+call printf
+
+lea eax, strBuff
+push eax
+push offset fmt
+call scanf
+add esp, 8
+
+mov esi, offset strBuff
+mov edi, offset respuesta2Correcta
+cmpsb
+jne respuesta2NoIgual
+
+mov eax, [puntaje]
+add eax, 10
+mov [puntaje], eax
+
+push offset igualMsg
+call printf
+jmp mostrarPuntaje2
 
 respuesta2NoIgual:
-    push offset noIgualMsg
-    call printf
+push offset noIgualMsg
+call printf
+jmp gameOver2
 
 mostrarPuntaje2:
-    push dword ptr [puntaje]
-    push offset puntajeMsg
+push dword ptr [puntaje]
+push offset puntajeMsg
+call printf
+add esp, 8
+
+    push offset continuarMsg
     call printf
+
+    gameOver2:
+    ; Si una pregunta fue contestada incorrectamente, mostrar el mensaje de perdedor
+    push offset respuesta2Correcta
+    push offset strBuff
+    push offset pregunta2
+    push dword ptr [puntaje]
+    push offset loserMsg
+    call printf
+    add esp, 20
+
+    lea eax, continuarRespuesta
+    push eax
+    push offset fmt
+    call scanf
     add esp, 8
 
-; Tercera pregunta
+cmp byte ptr [continuarRespuesta], 'n'
+je finComparacion
+
+    ; Tercera pregunta
     push offset pregunta3
     call printf
 
@@ -152,6 +218,9 @@ mostrarPuntaje2:
     call printf
 
     push offset respuesta3C
+    call printf
+
+    push offset respuesta3D
     call printf
 
     lea eax, strBuff
@@ -177,6 +246,7 @@ mostrarPuntaje2:
 respuesta3NoIgual:
     push offset noIgualMsg
     call printf
+    jmp gameOver3
 
 mostrarPuntaje3:
     push dword ptr [puntaje]
@@ -184,8 +254,29 @@ mostrarPuntaje3:
     call printf
     add esp, 8
 
+    gameOver3:
+    ; Si una pregunta fue contestada incorrectamente, mostrar el mensaje de perdedor
+    push offset respuesta3Correcta
+    push offset strBuff
+    push offset pregunta3
+    push dword ptr [puntaje]
+    push offset loserMsg
+    call printf
+    add esp, 20
 
-; Cuarta pregunta
+
+    push offset continuarMsg
+    call printf
+
+    lea eax, continuarRespuesta
+    push eax
+    push offset fmt
+    call scanf
+    add esp, 8
+
+cmp byte ptr [continuarRespuesta], 'n'
+je finComparacion
+    ; Cuarta pregunta
     push offset pregunta4
     call printf
 
@@ -198,6 +289,9 @@ mostrarPuntaje3:
     push offset respuesta4C
     call printf
 
+    push offset respuesta4D
+    call printf
+
     lea eax, strBuff
     push eax
     push offset fmt
@@ -208,7 +302,7 @@ mostrarPuntaje3:
     mov esi, offset strBuff
     mov edi, offset respuesta4Correcta
     cmpsb
-    jne respuesta3NoIgual
+    jne respuesta4NoIgual
 
     mov eax, [puntaje]
     add eax, 10
@@ -218,9 +312,11 @@ mostrarPuntaje3:
     call printf
     jmp mostrarPuntaje4
 
+
 respuesta4NoIgual:
     push offset noIgualMsg
     call printf
+    jmp gameOver4
 
 mostrarPuntaje4:
     push dword ptr [puntaje]
@@ -228,59 +324,35 @@ mostrarPuntaje4:
     call printf
     add esp, 8
 
-
-
-; Quinta pregunta
-    push offset pregunta5
-    call printf
-
-    push offset respuesta5A
-    call printf
-
-    push offset respuesta5B
-    call printf
-
-    push offset respuesta5C
-    call printf
-
-    lea eax, strBuff
-    push eax
-    push offset fmt
-    call scanf
-
-    add esp, 8
-
-    mov esi, offset strBuff
-    mov edi, offset respuesta5Correcta
-    cmpsb
-    jne respuesta5NoIgual
-
-    mov eax, [puntaje]
-    add eax, 10
-    mov [puntaje], eax
-
-    push offset igualMsg
-    call printf
-    jmp mostrarPuntaje5
-
-respuesta5NoIgual:
-    push offset noIgualMsg
-    call printf
-
-mostrarPuntaje5:
+    ; Si todas las preguntas fueron contestadas correctamente, mostrar el mensaje de ganador
     push dword ptr [puntaje]
-    push offset puntajeMsg
+    push offset winnerMsg
     call printf
     add esp, 8
+    jmp finComparacion
 
+gameOver4:
+    ; Si una pregunta fue contestada incorrectamente, mostrar el mensaje de perdedor
+    push offset respuesta4Correcta
+    push offset strBuff
+    push offset pregunta4
+    push dword ptr [puntaje]
+    push offset loserMsg
+    call printf
+    add esp, 20
 
 finComparacion:
     mov esp, ebp
     pop ebp
-    
+
     push 0
 
     ret
 main endp
 
 end
+
+
+
+
+
