@@ -1,3 +1,11 @@
+; Universidad Del Valle De Guatemala
+; Alexis Mesias 22562
+; Hugo Rivas 22500
+; Catedratico: Roger
+; Descripcion: Proyecto Assembler
+; Fecha: 02/06/2023
+
+
 includelib libcmt.lib
 includelib libvcruntime.lib
 includelib libucrt.lib
@@ -51,6 +59,7 @@ scanf proto C : VARARG
     respuesta5A byte "a) Roger",0Ah,0
     respuesta5B byte "b) Douglas",0Ah,0
     respuesta5C byte "c) Linett",0Ah,0
+    respuesta5d byte "d) Juan Carlos",0Ah,0
     respuesta5Correcta byte "a",0Ah,0
 
 .code
@@ -70,6 +79,8 @@ main proc
     add esp, 8
     cmp byte ptr [continuarRespuesta], 'n'
     je finComparacion
+
+
     ; Primera pregunta
     push offset pregunta
     call printf
@@ -179,15 +190,6 @@ push offset noIgualMsg
 call printf
 jmp gameOver2
 
-mostrarPuntaje2:
-push dword ptr [puntaje]
-push offset puntajeMsg
-call printf
-add esp, 8
-
-    push offset continuarMsg
-    call printf
-
     gameOver2:
     ; Si una pregunta fue contestada incorrectamente, mostrar el mensaje de perdedor
     push offset respuesta2Correcta
@@ -197,6 +199,17 @@ add esp, 8
     push offset loserMsg
     call printf
     add esp, 20
+
+mostrarPuntaje2:
+push dword ptr [puntaje]
+push offset puntajeMsg
+call printf
+add esp, 8
+
+    push offset continuarMsg
+    call printf
+
+    
 
     lea eax, continuarRespuesta
     push eax
@@ -248,12 +261,6 @@ respuesta3NoIgual:
     call printf
     jmp gameOver3
 
-mostrarPuntaje3:
-    push dword ptr [puntaje]
-    push offset puntajeMsg
-    call printf
-    add esp, 8
-
     gameOver3:
     ; Si una pregunta fue contestada incorrectamente, mostrar el mensaje de perdedor
     push offset respuesta3Correcta
@@ -263,6 +270,14 @@ mostrarPuntaje3:
     push offset loserMsg
     call printf
     add esp, 20
+
+mostrarPuntaje3:
+    push dword ptr [puntaje]
+    push offset puntajeMsg
+    call printf
+    add esp, 8
+
+    
 
 
     push offset continuarMsg
@@ -318,7 +333,86 @@ respuesta4NoIgual:
     call printf
     jmp gameOver4
 
+    gameOver4:
+    ; Si una pregunta fue contestada incorrectamente, mostrar el mensaje de perdedor
+    push offset respuesta4Correcta
+    push offset strBuff
+    push offset pregunta4
+    push dword ptr [puntaje]
+    push offset loserMsg
+    call printf
+    add esp, 20
+
 mostrarPuntaje4:
+    push dword ptr [puntaje]
+    push offset puntajeMsg
+    call printf
+    add esp, 8
+
+        push offset continuarMsg
+    call printf
+
+    lea eax, continuarRespuesta
+    push eax
+    push offset fmt
+    call scanf
+    add esp, 8
+
+cmp byte ptr [continuarRespuesta], 'n'
+je finComparacion
+; Quinta pregunta
+    push offset pregunta5
+    call printf
+
+    push offset respuesta5A
+    call printf
+
+    push offset respuesta5B
+    call printf
+
+    push offset respuesta5C
+    call printf
+
+    push offset respuesta5D
+    call printf
+
+    lea eax, strBuff
+    push eax
+    push offset fmt
+    call scanf
+
+    add esp, 8
+
+    mov esi, offset strBuff
+    mov edi, offset respuesta5Correcta
+    cmpsb
+    jne respuesta5NoIgual
+
+    mov eax, [puntaje]
+    add eax, 10
+    mov [puntaje], eax
+
+    push offset igualMsg
+    call printf
+    jmp mostrarPuntaje5
+
+
+respuesta5NoIgual:
+    push offset noIgualMsg
+    call printf
+    jmp gameOver5
+
+    gameOver5:
+    ; Si una pregunta fue contestada incorrectamente, mostrar el mensaje de perdedor
+    push offset respuesta4Correcta
+    push offset strBuff
+    push offset pregunta5
+    push dword ptr [puntaje]
+    push offset loserMsg
+    call printf
+    add esp, 20
+
+mostrarPuntaje5:
     push dword ptr [puntaje]
     push offset puntajeMsg
     call printf
@@ -331,16 +425,6 @@ mostrarPuntaje4:
     add esp, 8
     jmp finComparacion
 
-gameOver4:
-    ; Si una pregunta fue contestada incorrectamente, mostrar el mensaje de perdedor
-    push offset respuesta4Correcta
-    push offset strBuff
-    push offset pregunta4
-    push dword ptr [puntaje]
-    push offset loserMsg
-    call printf
-    add esp, 20
-
 finComparacion:
     mov esp, ebp
     pop ebp
@@ -351,6 +435,10 @@ finComparacion:
 main endp
 
 end
+
+
+
+
 
 
 
