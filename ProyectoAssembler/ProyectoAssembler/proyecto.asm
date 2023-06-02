@@ -131,6 +131,7 @@ respuestaNoIgual:
     push offset loserMsg
     call printf
     add esp, 20
+    ret
 
 mostrarPuntaje:
     push dword ptr [puntaje]
@@ -198,7 +199,9 @@ jmp gameOver2
     push dword ptr [puntaje]
     push offset loserMsg
     call printf
-    add esp, 20
+    add esp, '20'
+    
+    ret
 
 mostrarPuntaje2:
 push dword ptr [puntaje]
@@ -270,6 +273,7 @@ respuesta3NoIgual:
     push offset loserMsg
     call printf
     add esp, 20
+    ret
 
 mostrarPuntaje3:
     push dword ptr [puntaje]
@@ -342,6 +346,7 @@ respuesta4NoIgual:
     push offset loserMsg
     call printf
     add esp, 20
+    ret
 
 mostrarPuntaje4:
     push dword ptr [puntaje]
@@ -360,6 +365,8 @@ mostrarPuntaje4:
 
 cmp byte ptr [continuarRespuesta], 'n'
 je finComparacion
+
+
 ; Quinta pregunta
     push offset pregunta5
     call printf
@@ -411,6 +418,7 @@ respuesta5NoIgual:
     push offset loserMsg
     call printf
     add esp, 20
+    ret
 
 mostrarPuntaje5:
     push dword ptr [puntaje]
@@ -435,6 +443,7 @@ finComparacion:
 main endp
 
 end
+
 
 
 
